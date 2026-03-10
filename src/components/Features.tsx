@@ -1,41 +1,62 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
 
-const steps = [
+const sections = [
     {
-        id: 1,
-        title: 'True WYSIWYG Experience',
-        images: [
-            { label: 'WYSIWYG Editing Interface', description: 'Type naturally. No split panes, just perfectly formatted text ready to edit.' },
-            { label: 'Live Markdown Rendering', description: 'See your markdown syntax instantly converted into rich text as you type.' },
-            { label: 'Instant Document Preview', description: 'What you see is exactly what you get when exporting to PDF or web.' }
+        heading: 'Overview',
+        steps: [
+            {
+                id: 1,
+                title: 'Overview',
+                images: [
+                    { label: 'Distraction-Free Editor', src: '/images/overview/ui.png', description: 'A pure, distraction-free writing surface. Just you and your words — no clutter, no noise.' },
+                    { label: 'CommonMark WYSIWYG', src: '/images/overview/commonMark.png', description: 'Full CommonMark spec rendered live in a split-pane. Edit source on the left, see rich output on the right.' },
+                    { label: 'LaTeX & Mermaid', src: '/images/overview/latex-mermaid.png', description: 'Embed math formulas with KaTeX and flowchart diagrams with Mermaid — all rendered inline.' }
+                ]
+            },
         ]
     },
     {
-        id: 2,
-        title: 'Block-Based Editing',
-        images: [
-            { label: 'Drag and Drop Blocks', description: 'Effortlessly rearrange, structure, and organize your thoughts with an intuitive block-based model.' },
-            { label: 'Slash Command Menu', description: 'Quickly insert headings, lists, tables, and media without ever leaving your keyboard.' },
-            { label: 'Structured Outline View', description: 'Navigate complex documents easily with an auto-generated table of contents.' }
+        heading: 'Workflow',
+        steps: [
+            {
+                id: 2,
+                title: 'Workflow',
+                images: [
+                    { label: 'Command Palette', src: '/images/workflow/common-palette.png', description: 'Access every action, file, and setting through a powerful command palette — just press ⌘.' },
+                    { label: 'Slash Commands', src: '/images/workflow/slash.png', description: 'Type "/" to instantly insert links, code blocks, lists, and more without leaving the keyboard.' },
+                    { label: 'mdBook Integration', src: '/images/workflow/mdbook.png', description: 'Scan, build, and preview mdBook projects directly inside Typoly with a dedicated sidebar panel.' },
+                    { label: 'Workspace Manager', src: '/images/workflow/workspaces.png', description: 'Organize projects into workspaces. Switch between them instantly and keep your files grouped.' }
+                ]
+            },
         ]
     },
     {
-        id: 3,
-        title: 'Native Vim Keybindings',
-        images: [
-            { label: 'Vim Mode Command Bar', description: 'Navigate and manipulate text at the speed of thought with full Vim support.' },
-            { label: 'Visual Block Selection', description: 'Perform complex edits across multiple lines seamlessly with visual block mode.' },
-            { label: 'Macro Recording', description: 'Automate repetitive editing tasks by recording and replaying Vim macros.' }
+        heading: 'Customize',
+        steps: [
+            {
+                id: 3,
+                title: 'Customize',
+                images: [
+                    { label: 'Background Wallpaper', src: '/images/customize/background.png', description: 'Set a custom background image with adjustable opacity blending for a personalized workspace.' },
+                    { label: 'Theme System', src: '/images/customize/theme.png', description: 'Choose from built-in presets like Rosé Pine, or build your own theme with the visual Theme Builder.' },
+                    { label: 'Toolbar Customization', src: '/images/customize/customize-bar.png', description: 'Drag-and-drop to rearrange your Title Bar, Editor Tabs, Breadcrumbs, Toolbar, and Status Bar.' }
+                ]
+            },
         ]
     },
     {
-        id: 4,
-        title: 'Distraction-Free Workspace',
-        images: [
-            { label: 'Focus Mode Active', description: 'A pure, minimalist environment that gets out of your way.' },
-            { label: 'Typography Settings', description: 'Customize font sizes, line heights, and themes to match your personal reading comfort.' },
-            { label: 'Export Options Menu', description: 'Seamlessly convert your focused writing into polished PDFs, HTML, or sterile Markdown.' }
+        heading: 'And more...',
+        steps: [
+            {
+                id: 4,
+                title: 'And more...',
+                images: [
+                    { label: 'Chronos Timer', src: '/images/andmore/chronos.png', description: 'Track writing sessions with a built-in timer. Set priorities, deadlines, and archive completed tasks.' },
+                    { label: 'Clipboard History', src: '/images/andmore/clipboard.png', description: 'Never lose a copied snippet again. Search, filter, and pin your clipboard entries by type.' },
+                    { label: 'Translate Panel', src: '/images/andmore/translate.png', description: 'Select text and translate it instantly. Results appear in a side panel alongside your document.' }
+                ]
+            },
         ]
     },
 ];
@@ -44,16 +65,9 @@ export default function Features() {
     return (
         <section className="bg-[#363636] relative overflow-hidden">
             <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 relative pt-12 md:pt-16">
-
-                <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16">
-                    <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                        Overview
-                    </h2>
-                </div>
-
                 <div className="relative w-full">
                     <div className="flex flex-col">
-                        {steps.map((step, index) => (
+                        {sections.flatMap(s => s.steps).map((step, index) => (
                             <FeatureRow key={step.id} step={step} index={index} />
                         ))}
                     </div>
@@ -66,6 +80,7 @@ export default function Features() {
 type ImageItem = {
     label: string;
     description: string;
+    src: string;
 };
 
 type Step = {
@@ -168,7 +183,7 @@ function FeatureRow({ step, index }: { step: Step, index: number }) {
                                     return (
                                         <motion.div
                                             key={i}
-                                            className="absolute w-[80vw] sm:w-[720px] max-w-full aspect-[16/10] rounded-[24px] border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden cursor-pointer group bg-white"
+                                            className="absolute w-[80vw] sm:w-[720px] max-w-full aspect-[16/10] rounded-none border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden cursor-pointer group bg-white"
                                             animate={{
                                                 x: translateX,
                                                 scale: scale,
@@ -179,20 +194,12 @@ function FeatureRow({ step, index }: { step: Step, index: number }) {
                                             style={{ zIndex }}
                                             onClick={() => handleUpdateIndex(i)}
                                         >
-                                            <div className="text-center px-6 transition-transform duration-500 group-hover:scale-105">
-                                                <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium tracking-widest uppercase mb-4 border transition-colors ${isActive
-                                                    ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-sm'
-                                                    : 'bg-slate-50 text-slate-500 border-slate-200'
-                                                    }`}>
-                                                    IMAGE {i + 1} OF {step.images.length}
-                                                </span>
-                                                <p className={`font-medium text-2xl transition-colors ${isActive
-                                                    ? 'text-slate-900'
-                                                    : 'text-slate-400'
-                                                    }`}>
-                                                    {imageData.label}
-                                                </p>
-                                            </div>
+                                            <img
+                                                src={imageData.src}
+                                                alt={imageData.label}
+                                                className="w-full h-full object-contain bg-slate-50"
+                                                draggable={false}
+                                            />
                                         </motion.div>
                                     );
                                 })}
@@ -204,7 +211,7 @@ function FeatureRow({ step, index }: { step: Step, index: number }) {
                             onClick={() => handleUpdateIndex((activeIndex - 1 + step.images.length) % step.images.length)}
                             className={`absolute left-[50%] -translate-x-[45vw] sm:-translate-x-[530px] top-1/2 -translate-y-1/2 z-20 w-[50px] h-[36px] sm:w-[64px] sm:h-[40px] border flex items-center justify-center transition-all duration-300 ${isDark
                                 ? 'border-white/15 bg-white/5 text-slate-300 hover:text-white hover:bg-white/15 hover:border-white/30 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]'
-                                : 'border-black/5 bg-black/5 text-slate-500 hover:text-slate-900 hover:bg-black/10 hover:border-black/10 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.03)]'
+                                : 'border-slate-200 bg-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300'
                                 }`}
                             aria-label="Previous image"
                         >
@@ -219,7 +226,7 @@ function FeatureRow({ step, index }: { step: Step, index: number }) {
                             onClick={() => handleUpdateIndex((activeIndex + 1) % step.images.length)}
                             className={`absolute left-[50%] translate-x-[calc(45vw-50px)] sm:translate-x-[466px] top-1/2 -translate-y-1/2 z-20 w-[50px] h-[36px] sm:w-[64px] sm:h-[40px] border flex items-center justify-center transition-all duration-300 ${isDark
                                 ? 'border-white/15 bg-white/5 text-slate-300 hover:text-white hover:bg-white/15 hover:border-white/30 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]'
-                                : 'border-black/5 bg-black/5 text-slate-500 hover:text-slate-900 hover:bg-black/10 hover:border-black/10 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.03)]'
+                                : 'border-slate-200 bg-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300'
                                 }`}
                             aria-label="Next image"
                         >
