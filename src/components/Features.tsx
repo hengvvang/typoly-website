@@ -92,12 +92,10 @@ type Step = {
 function FeatureRow({ step, index }: { step: Step, index: number }) {
     const rowRef = useRef<HTMLDivElement>(null);
     const [activeIndex, setActiveIndex] = useState(0);
-    const [prevActiveIndex, setPrevActiveIndex] = useState(0);
 
     const isDark = index % 2 === 0;
 
     const handleUpdateIndex = (newIndex: number) => {
-        setPrevActiveIndex(activeIndex);
         setActiveIndex(newIndex);
     };
 
@@ -150,7 +148,7 @@ function FeatureRow({ step, index }: { step: Step, index: number }) {
                             {step.title}
                         </h3>
                         <p className={`text-[18px] md:text-[20px] max-w-2xl mx-auto leading-[1.6] transition-colors duration-300 min-h-[60px] md:min-h-[64px] ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                            {step.images[activeIndex]?.description || ''}
+                            {step.images[((activeIndex % step.images.length) + step.images.length) % step.images.length]?.description || ''}
                         </p>
                     </motion.div>
 
@@ -158,41 +156,37 @@ function FeatureRow({ step, index }: { step: Step, index: number }) {
                     <div className="w-full flex-shrink-0 min-w-0 relative">
                         <div className="relative w-full sm:max-w-[1000px] mx-auto overflow-hidden h-[250px] sm:h-[480px] flex items-center justify-center">
                             <div className="absolute inset-0 flex items-center justify-center">
-                                {step.images.map((imageData, i) => {
+                                {Array.from({ length: 5 }, (_, i) => activeIndex - 2 + i).map((slotIndex) => {
                                     const N = step.images.length;
-                                    // Calculate cyclic offset
-                                    let offset = (i - activeIndex) % N;
-                                    // Ensure offset wraps around symmetrically (e.g., -1, 0, 1 for 3 items)
-                                    if (offset > Math.floor(N / 2)) offset -= N;
-                                    if (offset < -Math.floor(N / 2)) offset += N;
-
-                                    let prevOffset = (i - prevActiveIndex) % N;
-                                    if (prevOffset > Math.floor(N / 2)) prevOffset -= N;
-                                    if (prevOffset < -Math.floor(N / 2)) prevOffset += N;
-
-                                    const isWrapping = Math.abs(offset - prevOffset) > 1;
+                                    const imageIndex = ((slotIndex % N) + N) % N;
+                                    const imageData = step.images[imageIndex];
+                                    const offset = slotIndex - activeIndex;
 
                                     const isActive = offset === 0;
 
                                     // Positioning math to show active in center and neighbors peaking in from sides
-                                    const translateX = offset === 0 ? "0px" : `calc(${offset * 100}% + ${offset * 24}px)`;
+                                    const translateX = `calc(${offset * 100}% + ${offset * 24}px)`;
                                     const scale = isActive ? 1 : 0.85;
                                     const opacity = isActive ? 1 : 0.4;
-                                    const zIndex = isActive ? 10 : 0;
+                                    const zIndex = isActive ? 10 : (Math.abs(offset) === 1 ? 5 : 0);
 
                                     return (
                                         <motion.div
-                                            key={i}
-                                            className="absolute w-[80vw] sm:w-[720px] max-w-full aspect-[16/10] rounded-none border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden cursor-pointer group bg-white"
+                                            key={slotIndex}
+                                            className={`absolute w-[80vw] sm:w-[720px] max-w-full aspect-[16/10] rounded-none border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden cursor-pointer group bg-white ${Math.abs(offset) > 1 ? 'pointer-events-none' : ''}`}
                                             animate={{
                                                 x: translateX,
                                                 scale: scale,
                                                 opacity: Math.abs(offset) > 1 ? 0 : opacity,
                                             }}
-                                            initial={false}
-                                            transition={{ type: "tween", ease: "easeInOut", duration: isWrapping ? 0 : 0.5 }}
+                                            initial={{
+                                                x: translateX,
+                                                scale: scale,
+                                                opacity: 0,
+                                            }}
+                                            transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
                                             style={{ zIndex }}
-                                            onClick={() => handleUpdateIndex(i)}
+                                            onClick={() => handleUpdateIndex(slotIndex)}
                                         >
                                             <img
                                                 src={imageData.src}
@@ -208,7 +202,7 @@ function FeatureRow({ step, index }: { step: Step, index: number }) {
 
                         {/* Left Navigation Arrow (Permanent) */}
                         <button
-                            onClick={() => handleUpdateIndex((activeIndex - 1 + step.images.length) % step.images.length)}
+                            onClick={() => handleUpdateIndex(activeIndex - 1)}
                             className={`absolute left-[50%] -translate-x-[45vw] sm:-translate-x-[530px] top-1/2 -translate-y-1/2 z-20 w-[50px] h-[36px] sm:w-[64px] sm:h-[40px] border flex items-center justify-center transition-all duration-300 ${isDark
                                 ? 'border-white/15 bg-white/5 text-slate-300 hover:text-white hover:bg-white/15 hover:border-white/30 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]'
                                 : 'border-slate-200 bg-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300'
@@ -223,7 +217,7 @@ function FeatureRow({ step, index }: { step: Step, index: number }) {
 
                         {/* Right Navigation Arrow (Permanent) */}
                         <button
-                            onClick={() => handleUpdateIndex((activeIndex + 1) % step.images.length)}
+                            onClick={() => handleUpdateIndex(activeIndex + 1)}
                             className={`absolute left-[50%] translate-x-[calc(45vw-50px)] sm:translate-x-[466px] top-1/2 -translate-y-1/2 z-20 w-[50px] h-[36px] sm:w-[64px] sm:h-[40px] border flex items-center justify-center transition-all duration-300 ${isDark
                                 ? 'border-white/15 bg-white/5 text-slate-300 hover:text-white hover:bg-white/15 hover:border-white/30 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.05)]'
                                 : 'border-slate-200 bg-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300'
